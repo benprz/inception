@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  mariadb:
+    build:
+      context: ./requirements/mariadb/
+      args:
+        MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+    image: mariadb
+    restart: always
+    volumes: 
+      - database:/var/lib/mysql
+    networks:
+      - inception
+  wordpress:
+    build: ./requirements/wordpress/
+    image: wordpress
+    depends_on:
+      - mariadb
+    restart: always
+    volumes: 
+      - www:/var/www
+    networks:
+      - inception
+    env_file: .env
+  nginx:
+    build: ./requirements/nginx/
+    image: nginx
+    ports:
+      - "443:443"
+    depends_on:
+      - wordpress
+    restart: always
+    volumes: 
+      - www:/var/www
+    networks:
+      - inception
+
+volumes:
+  database:
+    driver_opts:
+      type: volume
+      o: bind
+      device: /home/bperez/data/database
+  www:
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/bperez/data/www
+
+networks:
+  inception:
