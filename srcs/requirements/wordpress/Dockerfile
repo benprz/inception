@@ -23,6 +23,4 @@ RUN chmod +x /entrypoint.sh
 
 RUN /build.sh && rm /build.sh
 
-#EXPOSE 9000
-
 ENTRYPOINT /entrypoint.sh
